@@ -1,12 +1,9 @@
 package bigdata.assignment4;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -15,26 +12,14 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.log4j.Logger;
-
-/*
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.Sentence;
-import edu.stanford.nlp.process.CoreLabelTokenFactory;
-import edu.stanford.nlp.process.DocumentPreprocessor;
-import edu.stanford.nlp.process.PTBTokenizer;
-*/
 
 public class cooccurrence extends Configured implements Tool {
 
@@ -82,7 +67,7 @@ public class cooccurrence extends Configured implements Tool {
     	Pattern SENTENCE_BOUNDARY = Pattern.compile("[!?.]\\s");
     	Pattern WORD_BOUNDARY = Pattern.compile("\\s+");
     	for (String sentence : SENTENCE_BOUNDARY.split(wholefile)) {						//Split the whole text to an array of sentences.
-    		String processedsentence=sentence.toLowerCase().replaceAll("\\W+", " ").trim();	//Preprocess the sentence: convert all the characters to lower case, remove all the punctuation characters and trim spaces.
+    		String processedsentence=sentence.toLowerCase().replaceAll("(\\W|\\d|_)+", " ").trim();	//Preprocess the sentence: convert all the characters to lower case, remove all the punctuation characters and trim spaces.
     		String[] words = WORD_BOUNDARY.split(processedsentence);						//Split the sentences to an array of words.
     		int l=words.length;
     		if ( l > 1 ) {
