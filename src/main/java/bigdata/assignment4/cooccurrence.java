@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -19,11 +20,8 @@ import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
-import org.apache.log4j.Logger;
 
 public class cooccurrence extends Configured implements Tool {
-
-  private static final Logger LOG = Logger.getLogger(cooccurrence.class);
 
   public static void main(String[] args) throws Exception {
     int res = ToolRunner.run(new cooccurrence(), args);
@@ -66,18 +64,18 @@ public class cooccurrence extends Configured implements Tool {
           }*/
     	Pattern SENTENCE_BOUNDARY = Pattern.compile("[!?.]\\s");
     	Pattern WORD_BOUNDARY = Pattern.compile("\\s+");
-    	for (String sentence : SENTENCE_BOUNDARY.split(wholefile)) {						//Split the whole text to an array of sentences.
-    		String processedsentence=sentence.toLowerCase().replaceAll("(\\W|\\d|_)+", " ").trim();	//Preprocess the sentence: convert all the characters to lower case, remove all the punctuation characters and trim spaces.
-    		String[] words = WORD_BOUNDARY.split(processedsentence);						//Split the sentences to an array of words.
+    	for (String sentence : SENTENCE_BOUNDARY.split(wholefile)) {								//Split the whole text to an array of sentences.
+    		String processedsentence=sentence.toLowerCase().replaceAll("([^a-z])+", " ").trim();	//Preprocess the sentence: convert all the characters to lower case, remove all the punctuation characters and trim spaces.
+    		String[] words = WORD_BOUNDARY.split(processedsentence);								//Split the sentences to an array of words.
     		int l=words.length;
     		if ( l > 1 ) {
-    			for (int i = 0 ; i < l ; i++ ) {											//Traverse through the array of words.
+    			for (int i = 0 ; i < l ; i++ ) {													//Traverse through the array of words.
     				if ( words[i].isEmpty() ) {
     					continue;
     				}
     				MapWritable stripe = new MapWritable();
-    				for (int j = i - 2; j <= i + 2; j++ ) {									//Traverse through the neighbors of current word(the max distance is 2).
-    					if (j >= 0 && j != i && j < l) {									//The index of neighbor should be valid.
+    				for (int j = i - 2; j <= i + 2; j++ ) {											//Traverse through the neighbors of current word(the max distance is 2).
+    					if (j >= 0 && j != i && j < l) {											//The index of neighbor should be valid.
     						if ( stripe.containsKey(words[j]) ) {
     							IntWritable count = (IntWritable)stripe.get(new Text(words[j]));
     			                count.set(count.get()+1);
